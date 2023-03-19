@@ -6,11 +6,16 @@ on:
       - main
 
 jobs:
-  install-npm:
+  trigger-novu-event:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
       - name: Install NPM dependencies
         run: npm install @novu/node
@@ -34,38 +39,6 @@ jobs:
                 },
               },
             });
-          })()
-        env:
-          NOVU_API_KEY: ${{ secrets.NOVU_API_KEY }}
-
-  install-yarn:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install Yarn dependencies
-        run: yarn add @novu/node
-
-      - name: Trigger Novu event
-        run: |
-          const { Novu } = require('@novu/node');
-          const novu = new Novu(process.env.NOVU_API_KEY);
-
-          (async () => {
-            await novu.trigger('<REPLACE_WITH_EVENT_NAME_FROM_ADMIN_PANEL>', {
-              to: {
-                subscriberId: '<USER_IDENTIFIER>',
-                email: 'test@email.com',
-                firstName: 'John',
-                lastName: 'Doe',
-              },
-              payload: {
-                organization: {
-                  logo: 'https://evilcorp.com/logo.png',
-                },
-              },
-            });
-          })()
+          })();
         env:
           NOVU_API_KEY: ${{ secrets.NOVU_API_KEY }}
