@@ -1,0 +1,65 @@
+name: Novu Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install NPM dependencies
+        run: npm install @novu/node
+
+      - name: Trigger Novu event
+        run: |
+          node -e "const { Novu } = require('@novu/node');
+                  const novu = new Novu(process.env.NOVU_API_KEY);
+                  await novu.trigger('<REPLACE_WITH_EVENT_NAME_FROM_ADMIN_PANEL>', {
+                    to: {
+                      subscriberId: '<USER_IDENTIFIER>',
+                      email: 'test@email.com',
+                      firstName: 'John',
+                      lastName: 'Doe',
+                    },
+                    payload: {
+                      organization: {
+                        logo: 'https://evilcorp.com/logo.png',
+                      },
+                    },
+                  });"
+        env:
+          NOVU_API_KEY: ${{ secrets.NOVU_API_KEY }}
+
+  install-yarn:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Yarn dependencies
+        run: yarn add @novu/node
+
+      - name: Trigger Novu event
+        run: |
+          node -e "const { Novu } = require('@novu/node');
+                  const novu = new Novu(process.env.NOVU_API_KEY);
+                  await novu.trigger('<REPLACE_WITH_EVENT_NAME_FROM_ADMIN_PANEL>', {
+                    to: {
+                      subscriberId: '<USER_IDENTIFIER>',
+                      email: 'test@email.com',
+                      firstName: 'John',
+                      lastName: 'Doe',
+                    },
+                    payload: {
+                      organization: {
+                        logo: 'https://evilcorp.com/logo.png',
+                      },
+                    },
+                  });"
+        env:
+          NOVU_API_KEY: ${{ secrets.NOVU_API_KEY }}
